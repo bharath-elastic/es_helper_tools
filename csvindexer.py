@@ -9,24 +9,18 @@ DOC_TYPE = '_doc'
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('dir_name', help='name of directory with csv')
-    parser.add_argument('-i', '--index', help='elasticsearch index name(default=dir_name)')
+    parser.add_argument('file', help='name of the csv file')
+    parser.add_argument('index', help='elasticsearch index name')
     args = parser.parse_args()
     return args
 
-def prospect(file_pat, root_dir):
-    for path, dirlist, filelist in os.walk(root_dir):
-        for name in fnmatch.filter(filelist, file_pat):
-            yield os.path.join(path,name)
+def docs(file_name):
+    with open(file_name, 'r') as f:
+        dictf = DictReader(f)
+        for doc in dictf:
+            yield doc
 
-def harvest(file_names):
-    for file_name in file_names:
-        with open(file_name, 'r') as f:
-            dictf = DictReader(f)
-            for doc in dictf:
-                yield doc
-
-def make_actions(docs):
+def make_actions(docs, index_name):
     for doc in docs:
         action =  { "_index": index_name, "_type": DOC_TYPE }
         action["_source"] = doc
@@ -50,17 +44,7 @@ def get_clients(user,pwd):
     return es
 
 args = parse_args()
-if args.index == None:
-    index_name = args.dir_name
-else:
-    index_name = args.index
 user, pwd = get_credentials()
-# print(user, pwd)
 es = get_clients(user,pwd)
-# print(es.info())
-""" for fname in find_files('*.json', 'sample'):
-    print(fname)  """
-
-
-actions = make_actions(harvest(prospect('*.csv', args.dir_name)))
+actions = make_actions(docs(args.file), args.index)
 b = bulk(es, actions)

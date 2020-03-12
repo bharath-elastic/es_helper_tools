@@ -1,5 +1,5 @@
 esconfig = [{
-    'host': '10.0.2.2',
+    'host': 'localhost',
     'port': 9200,
     'protocol': 'http',
     }]
