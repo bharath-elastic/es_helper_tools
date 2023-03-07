@@ -5,8 +5,6 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 from config import esconfig
 
-DOC_TYPE = '_doc'
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('file', help='name of the csv file')
@@ -22,7 +20,7 @@ def docs(file_name):
 
 def make_actions(docs, index_name):
     for doc in docs:
-        action =  { "_index": index_name, "_type": DOC_TYPE }
+        action =  { "_index": index_name }
         action["_source"] = doc
         yield action
 
