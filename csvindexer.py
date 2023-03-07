@@ -1,5 +1,5 @@
 # load csv data into elasticsearch
-import os, fnmatch, argparse
+import argparse
 from csv import DictReader
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
